@@ -1,6 +1,7 @@
 const quiz = {
   pool: [],        // mots de la catégorie choisie
   numChoices: 6,
+  direction: "fr-to-kr", // "fr-to-kr" ou "kr-to-fr"
   current: null,   // mot à trouver actuellement
   options: [],      // choix affichés pour la question actuelle
   index: 0,
@@ -83,6 +84,7 @@ function closeQuiz() {
 /* ---------- game flow ---------- */
 function startQuiz() {
   const cat = document.getElementById("quiz-cat").value;
+  quiz.direction = document.getElementById("quiz-direction").value;
   quiz.numChoices = parseInt(document.getElementById("quiz-choices").value, 10);
   quiz.pool = cat ? koreanData.filter(w => w.cat === cat) : koreanData;
 
@@ -110,6 +112,11 @@ function nextQuestion() {
   }
 
   quiz.current = quiz.sequence[quiz.index];
+  const isFrToKr = quiz.direction === "fr-to-kr";
+
+  // mot affiché dans la question vs. champ utilisé pour les options de réponse
+  const promptField = isFrToKr ? "fr" : "kr";
+  const answerField = isFrToKr ? "kr" : "fr";
 
   const others = shuffle(quiz.pool.filter(w => w.kr !== quiz.current.kr))
     .slice(0, quiz.numChoices - 1);
@@ -119,14 +126,19 @@ function nextQuestion() {
     `${quiz.index + 1} / ${quiz.sequence.length}`;
   document.getElementById("quiz-score").textContent =
     `${quiz.correct} ✅ · ${quiz.wrong} ❌`;
-  document.getElementById("quiz-word").textContent = quiz.current.fr;
+  document.getElementById("quiz-word").textContent = quiz.current[promptField];
+  document.querySelector(".quiz-prompt-label").textContent =
+    isFrToKr ? "Traduis en coréen" : "Traduis en français";
 
   const optionsEl = document.getElementById("quiz-options");
   optionsEl.innerHTML = "";
   quiz.options.forEach(opt => {
     const btn = document.createElement("button");
     btn.className = "quiz-option";
-    btn.textContent = opt.kr;
+    btn.textContent = opt[answerField];
+    // si plusieurs mots partagent la même traduction française, on
+    // identifie la bonne réponse via le mot coréen (toujours unique ici)
+    btn.dataset.kr = opt.kr;
     btn.addEventListener("click", () => selectAnswer(btn, opt));
     optionsEl.appendChild(btn);
   });
@@ -137,6 +149,8 @@ function selectAnswer(btn, opt) {
   allButtons.forEach(b => b.disabled = true);
 
   const isCorrect = opt.kr === quiz.current.kr;
+  recordAnswer(quiz.current.kr, isCorrect);
+  const answerField = quiz.direction === "fr-to-kr" ? "kr" : "fr";
 
   if (isCorrect) {
     btn.classList.add("correct");
@@ -145,7 +159,7 @@ function selectAnswer(btn, opt) {
     btn.classList.add("wrong");
     quiz.wrong++;
     allButtons.forEach(b => {
-      if (b.textContent === quiz.current.kr) b.classList.add("correct");
+      if (b.dataset.kr === quiz.current.kr) b.classList.add("correct");
     });
   }
 

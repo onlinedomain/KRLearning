@@ -354,6 +354,16 @@ const koreanData = [
   { cat: "Technologie & Loisirs", fr: "Voyage", kr: "여행" },
   { cat: "Technologie & Loisirs", fr: "Photographie (loisir)", kr: "사진 찍기" },
 
+  // ---------- Ajouts pour les phrases (sentences.js) ----------
+  { cat: "Routine quotidienne", fr: "Météo / Temps (climat)", kr: "날씨" },
+  { cat: "Lieux & Transports", fr: "Coréen (la langue)", kr: "한국어" },
+  { cat: "Routine quotidienne", fr: "Cours (classe)", kr: "수업" },
+  { cat: "Connecteurs", fr: "Question", kr: "질문" },
+  { cat: "Connecteurs", fr: "Lentement", kr: "천천히" },
+  { cat: "Connecteurs", fr: "Vite", kr: "빨리" },
+  { cat: "Technologie & Loisirs", fr: "Lettre (courrier)", kr: "편지" },
+  { cat: "Animaux", fr: "Chiot / Chien (familier)", kr: "강아지" },
+  { cat: "Routine quotidienne", fr: "Vêtement", kr: "옷" },
 ];
 
 /* ===================================================================

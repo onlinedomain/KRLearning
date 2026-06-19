@@ -26,7 +26,7 @@
     </div>
 
     <div class="nav-group">
-      <span class="nav-label">Langues</span>
+      <span class="nav-label">Vocabulaire</span>
       <button class="nav-item active" data-view="korean">
         <span class="nav-tag kr">한</span> Coréen
       </button>
@@ -51,7 +51,7 @@
     <section class="view active" id="view-korean">
       <header class="view-header">
         <div class="view-heading">
-          <span class="view-eyebrow">진행 중 · en cours</span>
+          <span class="view-eyebrow">Banque de vocabulaire</span>
           <h1>Vocabulaire coréen</h1>
         </div>
         <div class="view-controls">
@@ -68,11 +68,12 @@
     <section class="view" id="view-activities">
       <header class="view-header">
         <div class="view-heading">
-          <span class="view-eyebrow">bientôt · soon</span>
+          <span class="view-eyebrow">Amusez vous !</span>
           <h1>Activités &amp; jeux</h1>
         </div>
       </header>
 
+<!-- ---------- Activity picker (shown before a game starts) ---------- -->
 <!-- ---------- Activity picker (shown before a game starts) ---------- -->
       <div class="activity-grid" id="activity-picker">
         <article class="activity-card playable" data-game="quiz">
@@ -81,26 +82,54 @@
           <p>Un mot français s'affiche, clique sur sa traduction coréenne parmi plusieurs choix.</p>
           <span class="activity-status playable">Jouer</span>
         </article>
-        <article class="activity-card">
-          <span class="activity-icon">配</span>
-          <h3>Memory</h3>
-          <p>Associe le mot français à sa traduction coréenne.</p>
-          <span class="activity-status">À venir</span>
+        <article class="activity-card playable" data-game="survival">
+          <span class="activity-icon">火</span>
+          <h3>Mode survie</h3>
+          <p>Une erreur et c'est fini. Jusqu'où peux-tu aller ?</p>
+          <span class="activity-status playable">Jouer</span>
         </article>
-        <article class="activity-card">
-          <span class="activity-icon">聞</span>
-          <h3>Écoute &amp; reconnais</h3>
-          <p>Entraîne ton oreille sur les sons du hangeul.</p>
-          <span class="activity-status">À venir</span>
+        <article class="activity-card playable" data-game="flashcards">
+          <span class="activity-icon">片</span>
+          <h3>Flashcards</h3>
+          <p>Devine dans ta tête, retourne la carte, auto-évalue-toi.</p>
+          <span class="activity-status playable">Jouer</span>
+        </article>
+        <article class="activity-card playable" data-game="review">
+          <span class="activity-icon">復</span>
+          <h3>Révision ciblée</h3>
+          <p>Retravaille en priorité les mots où tu te trompes le plus souvent.</p>
+          <span class="activity-status playable">Jouer</span>
+        </article>
+        <article class="activity-card playable" data-game="fillblank">
+          <span class="activity-icon">填</span>
+          <h3>Phrase à trous</h3>
+          <p>Complète la phrase coréenne avec le bon mot.</p>
+          <span class="activity-status playable">Jouer</span>
+        </article>
+        <article class="activity-card playable" data-game="typing">
+          <span class="activity-icon">打</span>
+          <h3>Saisie libre</h3>
+          <p>Tape la traduction au clavier, sans choix proposés.</p>
+          <span class="activity-status playable">Jouer</span>
         </article>
       </div>
 
+
+    </section>
       <!-- ---------- Quiz game screen ---------- -->
       <div class="quiz-wrap" id="quiz-wrap">
 
         <div class="quiz-setup" id="quiz-setup">
           <h2>Trouve la traduction</h2>
           <p class="quiz-setup-sub">Choisis une catégorie et le nombre de choix proposés.</p>
+
+          <label class="quiz-field">
+            <span>Sens</span>
+            <select id="quiz-direction">
+              <option value="fr-to-kr">Français → Coréen</option>
+              <option value="kr-to-fr">Coréen → Français</option>
+            </select>
+          </label>
 
           <label class="quiz-field">
             <span>Catégorie</span>
@@ -148,19 +177,312 @@
           <ul class="quiz-result-list" id="quiz-result-list"></ul>
           <button class="btn-primary" id="quiz-replay">Rejouer</button>
           <button class="btn-ghost" id="quiz-back">Retour aux activités</button>
+</div>
+
+      </div>
+
+      <!-- ---------- Survival game screen ---------- -->
+      <div class="survival-wrap" id="survival-wrap">
+
+        <div class="quiz-setup" id="survival-setup">
+          <h2>Mode survie</h2>
+          <p class="quiz-setup-sub">Une erreur met fin à la partie. Jusqu'où iras-tu ?</p>
+
+          <label class="quiz-field">
+            <span>Sens</span>
+            <select id="survival-direction">
+              <option value="fr-to-kr">Français → Coréen</option>
+              <option value="kr-to-fr">Coréen → Français</option>
+            </select>
+          </label>
+
+          <label class="quiz-field">
+            <span>Catégorie</span>
+            <select id="survival-cat"></select>
+          </label>
+
+          <label class="quiz-field">
+            <span>Nombre de choix</span>
+            <select id="survival-choices">
+              <option value="6">6</option>
+              <option value="8">8</option>
+              <option value="10">10</option>
+            </select>
+          </label>
+
+          <button class="btn-primary" id="survival-start">Commencer</button>
+          <button class="btn-ghost" id="survival-cancel">Retour</button>
+        </div>
+
+        <div class="quiz-game" id="survival-game">
+          <div class="quiz-top">
+            <span class="quiz-progress" id="survival-streak">Série : 0</span>
+            <span class="quiz-score" id="survival-best">Record : 0</span>
+          </div>
+
+          <div class="quiz-prompt">
+            <span class="quiz-prompt-label" id="survival-prompt-label">Traduis en coréen</span>
+            <span class="quiz-prompt-word" id="survival-word">mot</span>
+          </div>
+
+          <div class="quiz-options" id="survival-options"></div>
+
+          <button class="btn-ghost" id="survival-quit">Abandonner</button>
+        </div>
+
+        <div class="quiz-result" id="survival-result">
+          <h2>Partie terminée</h2>
+          <p class="quiz-result-score" id="survival-result-score">0</p>
+          <p class="quiz-result-sub" id="survival-result-sub"></p>
+          <ul class="quiz-result-list" id="survival-result-list"></ul>
+          <button class="btn-primary" id="survival-replay">Rejouer</button>
+          <button class="btn-ghost" id="survival-back">Retour aux activités</button>
         </div>
 
       </div>
-    </section>
+
+      <!-- ---------- Flashcards screen ---------- -->
+      <div class="flash-wrap" id="flash-wrap">
+
+        <div class="quiz-setup" id="flash-setup">
+          <h2>Flashcards</h2>
+          <p class="quiz-setup-sub">Devine la traduction dans ta tête, puis retourne la carte pour vérifier.</p>
+
+          <label class="quiz-field">
+            <span>Sens</span>
+            <select id="flash-direction">
+              <option value="fr-to-kr">Français → Coréen</option>
+              <option value="kr-to-fr">Coréen → Français</option>
+            </select>
+          </label>
+
+          <label class="quiz-field">
+            <span>Catégorie</span>
+            <select id="flash-cat"></select>
+          </label>
+
+          <label class="quiz-field">
+            <span>Ordre</span>
+            <select id="flash-order">
+              <option value="random">Aléatoire</option>
+              <option value="sequential">Dans l'ordre</option>
+            </select>
+          </label>
+
+          <button class="btn-primary" id="flash-start">Commencer</button>
+          <button class="btn-ghost" id="flash-cancel">Retour</button>
+        </div>
+
+        <div class="flash-game" id="flash-game">
+          <div class="quiz-top">
+            <span class="quiz-progress" id="flash-progress">1 / 10</span>
+            <span class="quiz-score" id="flash-score">0 su · 0 à revoir</span>
+          </div>
+
+          <div class="flash-card" id="flash-card">
+            <span class="flash-label" id="flash-label">Français</span>
+            <span class="flash-word" id="flash-word">mot</span>
+            <span class="flash-hint">Clique pour révéler</span>
+          </div>
+
+          <div class="flash-rate" id="flash-rate">
+            <button class="btn-ghost rate-no" id="flash-no">Pas su 😕</button>
+            <button class="btn-primary rate-yes" id="flash-yes">Su ! ✅</button>
+          </div>
+
+          <button class="btn-ghost" id="flash-quit">Arrêter</button>
+        </div>
+
+        <div class="quiz-result" id="flash-result">
+          <h2>Session terminée</h2>
+          <p class="quiz-result-score" id="flash-result-score">0 / 0</p>
+          <p class="quiz-result-sub" id="flash-result-sub"></p>
+          <ul class="quiz-result-list" id="flash-result-list"></ul>
+          <button class="btn-primary" id="flash-replay">Rejouer</button>
+          <button class="btn-ghost" id="flash-back">Retour aux activités</button>
+        </div>
+
+      </div>
+      <!-- ---------- Targeted review screen ---------- -->
+      <div class="review-wrap" id="review-wrap">
+
+        <div class="quiz-setup" id="review-setup">
+          <h2>Révision ciblée</h2>
+          <p class="quiz-setup-sub" id="review-status">Chargement des statistiques...</p>
+
+          <label class="quiz-field">
+            <span>Sens</span>
+            <select id="review-direction">
+              <option value="fr-to-kr">Français → Coréen</option>
+              <option value="kr-to-fr">Coréen → Français</option>
+            </select>
+          </label>
+
+          <label class="quiz-field">
+            <span>Nombre de choix</span>
+            <select id="review-choices">
+              <option value="6">6</option>
+              <option value="8">8</option>
+              <option value="10">10</option>
+            </select>
+          </label>
+
+          <button class="btn-primary" id="review-start">Commencer</button>
+          <button class="btn-ghost" id="review-reset">Réinitialiser les statistiques</button>
+          <button class="btn-ghost" id="review-cancel">Retour</button>
+        </div>
+
+        <div class="quiz-game" id="review-game">
+          <div class="quiz-top">
+            <span class="quiz-progress" id="review-progress">1 / 10</span>
+            <span class="quiz-score" id="review-score">0 ✅ · 0 ❌</span>
+          </div>
+
+          <div class="quiz-prompt">
+            <span class="quiz-prompt-label" id="review-prompt-label">Traduis en coréen</span>
+            <span class="quiz-prompt-word" id="review-word">mot</span>
+          </div>
+
+          <div class="quiz-options" id="review-options"></div>
+
+          <button class="btn-ghost" id="review-quit">Arrêter</button>
+        </div>
+
+        <div class="quiz-result" id="review-result">
+          <h2>Résultat</h2>
+          <p class="quiz-result-score" id="review-result-score">0 / 0</p>
+          <p class="quiz-result-sub" id="review-result-sub"></p>
+          <ul class="quiz-result-list" id="review-result-list"></ul>
+          <button class="btn-primary" id="review-replay">Rejouer</button>
+          <button class="btn-ghost" id="review-back">Retour aux activités</button>
+        </div>
+
+      </div>
+      <!-- ---------- Fill-in-the-blank screen ---------- -->
+      <div class="fillblank-wrap" id="fillblank-wrap">
+
+        <div class="quiz-setup" id="fillblank-setup">
+          <h2>Phrase à trous</h2>
+          <p class="quiz-setup-sub">Complète la phrase coréenne avec le mot manquant.</p>
+
+          <label class="quiz-field">
+            <span>Nombre de phrases</span>
+            <select id="fillblank-length"></select>
+          </label>
+
+          <button class="btn-primary" id="fillblank-start">Commencer</button>
+          <button class="btn-ghost" id="fillblank-cancel">Retour</button>
+        </div>
+
+        <div class="quiz-game" id="fillblank-game">
+          <div class="quiz-top">
+            <span class="quiz-progress" id="fillblank-progress">1 / 10</span>
+            <span class="quiz-score" id="fillblank-score">0 ✅ · 0 ❌</span>
+          </div>
+
+          <div class="quiz-prompt fillblank-prompt">
+            <span class="quiz-prompt-label">Complète la phrase</span>
+            <span class="quiz-prompt-word fillblank-sentence" id="fillblank-sentence">문장 ___</span>
+            <span class="fillblank-translation" id="fillblank-translation">traduction française</span>
+          </div>
+
+          <div class="quiz-options" id="fillblank-options"></div>
+
+          <button class="btn-ghost" id="fillblank-quit">Arrêter</button>
+        </div>
+
+        <div class="quiz-result" id="fillblank-result">
+          <h2>Résultat</h2>
+          <p class="quiz-result-score" id="fillblank-result-score">0 / 0</p>
+          <p class="quiz-result-sub" id="fillblank-result-sub"></p>
+          <ul class="quiz-result-list" id="fillblank-result-list"></ul>
+          <button class="btn-primary" id="fillblank-replay">Rejouer</button>
+          <button class="btn-ghost" id="fillblank-back">Retour aux activités</button>
+        </div>
+
+      </div>
+      <!-- ---------- Free typing screen ---------- -->
+      <div class="typing-wrap" id="typing-wrap">
+
+        <div class="quiz-setup" id="typing-setup">
+          <h2>Saisie libre</h2>
+          <p class="quiz-setup-sub">Tape la traduction au clavier. Pas de choix, pas de devinette.</p>
+
+          <label class="quiz-field">
+            <span>Sens</span>
+            <select id="typing-direction">
+              <option value="kr-to-fr">Coréen → Français</option>
+              <option value="fr-to-kr">Français → Coréen</option>
+            </select>
+          </label>
+
+          <label class="quiz-field">
+            <span>Catégorie</span>
+            <select id="typing-cat"></select>
+          </label>
+
+          <label class="quiz-field">
+            <span>Nombre de mots</span>
+            <select id="typing-length"></select>
+          </label>
+
+          <button class="btn-primary" id="typing-start">Commencer</button>
+          <button class="btn-ghost" id="typing-cancel">Retour</button>
+        </div>
+
+        <div class="quiz-game" id="typing-game">
+          <div class="quiz-top">
+            <span class="quiz-progress" id="typing-progress">1 / 10</span>
+            <span class="quiz-score" id="typing-score">0 ✅ · 0 ❌</span>
+          </div>
+
+          <div class="quiz-prompt">
+            <span class="quiz-prompt-label" id="typing-prompt-label">Traduis en coréen</span>
+            <span class="quiz-prompt-word" id="typing-word">mot</span>
+          </div>
+
+          <form class="typing-form" id="typing-form">
+            <input
+              type="text"
+              class="typing-input"
+              id="typing-input"
+              placeholder="Tape ta réponse..."
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+            >
+            <button type="submit" class="btn-primary" id="typing-submit">Valider</button>
+          </form>
+
+          <div class="typing-feedback" id="typing-feedback"></div>
+
+          <button class="btn-ghost" id="typing-quit">Arrêter</button>
+        </div>
+
+        <div class="quiz-result" id="typing-result">
+          <h2>Résultat</h2>
+          <p class="quiz-result-score" id="typing-result-score">0 / 0</p>
+          <p class="quiz-result-sub" id="typing-result-sub"></p>
+          <ul class="quiz-result-list" id="typing-result-list"></ul>
+          <button class="btn-primary" id="typing-replay">Rejouer</button>
+          <button class="btn-ghost" id="typing-back">Retour aux activités</button>
+        </div>
+
+      </div>
     </section>
 
   </main>
 </div>
 
 <script src="js/data.js"></script>
+<script src="js/stats.js"></script>
+<script src="js/sentences.js"></script>
 <script src="js/app.js"></script>
 <script src="js/quiz.js"></script>
-
-
+<script src="js/survival.js"></script>
+<script src="js/flashcards.js"></script>
+<script src="js/review.js"></script>
+<script src="js/fillblank.js"></script>
+<script src="js/typing.js"></script>
 </body>
 </html>
