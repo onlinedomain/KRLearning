@@ -37,6 +37,9 @@
       <button class="nav-item" data-view="activities">
         <span class="nav-tag ac">▶</span> Activités
       </button>
+      <button class="nav-item" data-view="scores">
+        <span class="nav-tag sc">▤</span> Score
+      </button>
     </div>
 
     <div class="sidebar-foot">
@@ -85,19 +88,19 @@
         <article class="activity-card playable" data-game="survival">
           <span class="activity-icon">火</span>
           <h3>Mode survie</h3>
-          <p>Une erreur et c'est fini. Jusqu'où peux-tu aller ?</p>
+          <p>Une erreur et c'est fini !</p>
           <span class="activity-status playable">Jouer</span>
         </article>
         <article class="activity-card playable" data-game="flashcards">
           <span class="activity-icon">片</span>
           <h3>Flashcards</h3>
-          <p>Devine dans ta tête, retourne la carte, auto-évalue-toi.</p>
+          <p>Devine dans ta tête et retourne la carte.</p>
           <span class="activity-status playable">Jouer</span>
         </article>
         <article class="activity-card playable" data-game="review">
           <span class="activity-icon">復</span>
           <h3>Révision ciblée</h3>
-          <p>Retravaille en priorité les mots où tu te trompes le plus souvent.</p>
+          <p>Révise en priorité les mots où tu te trompes le plus souvent.</p>
           <span class="activity-status playable">Jouer</span>
         </article>
         <article class="activity-card playable" data-game="fillblank">
@@ -109,13 +112,11 @@
         <article class="activity-card playable" data-game="typing">
           <span class="activity-icon">打</span>
           <h3>Saisie libre</h3>
-          <p>Tape la traduction au clavier, sans choix proposés.</p>
+          <p>Tape la traduction au clavier.</p>
           <span class="activity-status playable">Jouer</span>
         </article>
       </div>
 
-
-    </section>
       <!-- ---------- Quiz game screen ---------- -->
       <div class="quiz-wrap" id="quiz-wrap">
 
@@ -471,6 +472,62 @@
       </div>
     </section>
 
+    <!-- ---------- SCORES VIEW ---------- -->
+    <section class="view" id="view-scores">
+      <header class="view-header">
+        <div class="view-heading">
+          <span class="view-eyebrow">통계 · stats</span>
+          <h1>Score &amp; progression</h1>
+        </div>
+      </header>
+
+      <div class="score-game-picker" id="score-game-picker"></div>
+
+      <div class="score-empty" id="score-empty">
+        <span class="empty-glyph">統</span>
+        <p>Aucune donnée pour ce jeu encore.</p>
+        <p class="empty-sub">Joue une partie pour voir apparaître tes statistiques ici.</p>
+      </div>
+
+      <div class="score-dashboard" id="score-dashboard">
+
+        <div class="score-summary" id="score-summary"></div>
+
+        <div class="score-panel">
+          <h3>Évolution du taux de réussite</h3>
+          <p class="score-panel-sub">Chaque point = une session de jeu. Vise une courbe qui monte.</p>
+          <svg class="score-chart" id="chart-progress" viewBox="0 0 600 220" preserveAspectRatio="none"></svg>
+        </div>
+
+        <div class="score-grid-2">
+          <div class="score-panel">
+            <h3>Points forts &amp; faibles par catégorie</h3>
+            <p class="score-panel-sub">Plus la barre est longue et claire, plus la catégorie est maîtrisée.</p>
+            <div class="score-bars" id="chart-categories"></div>
+          </div>
+
+          <div class="score-panel">
+            <h3>Mots les plus difficiles</h3>
+            <p class="score-panel-sub">Les 5 mots avec le pire taux de réussite (au moins 2 tentatives).</p>
+            <ul class="score-toplist" id="chart-toplist"></ul>
+          </div>
+        </div>
+
+        <div class="score-panel">
+          <h3>Régularité de pratique</h3>
+          <p class="score-panel-sub">Nombre de mots travaillés par jour, sur les 14 derniers jours.</p>
+          <div class="score-bars-vertical" id="chart-daily"></div>
+        </div>
+        
+        <div class="score-toolbar">
+          <div class="score-game-picker" id="score-game-picker"></div>
+          <button class="btn-ghost score-reset-btn" id="score-reset-all">Réinitialiser tout l'historique</button>
+        </div>
+
+      </div>
+
+    </section>
+
   </main>
 </div>
 
@@ -484,5 +541,6 @@
 <script src="js/review.js"></script>
 <script src="js/fillblank.js"></script>
 <script src="js/typing.js"></script>
+<script src="js/scores.js"></script>
 </body>
 </html>

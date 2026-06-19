@@ -105,7 +105,7 @@ function survivalAnswer(btn, opt) {
   allButtons.forEach(b => b.disabled = true);
 
   const isCorrect = opt.kr === survival.current.kr;
-  recordAnswer(survival.current.kr, isCorrect);
+  recordAnswer(survival.current.kr, isCorrect, "survival");
   survival.log.push({ fr: survival.current.fr, kr: survival.current.kr, isCorrect });
 
   if (isCorrect) {

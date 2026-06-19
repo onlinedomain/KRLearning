@@ -154,7 +154,7 @@ function submitTyping() {
   const userAnswer = normalize(input.value);
   const isCorrect = userAnswer.length > 0 && userAnswer === normalize(expected);
 
-  recordAnswer(typing.current.kr, isCorrect);
+  recordAnswer(typing.current.kr, isCorrect, "typing");
 
   const feedback = document.getElementById("typing-feedback");
   input.disabled = true;

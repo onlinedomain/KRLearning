@@ -149,7 +149,7 @@ function selectAnswer(btn, opt) {
   allButtons.forEach(b => b.disabled = true);
 
   const isCorrect = opt.kr === quiz.current.kr;
-  recordAnswer(quiz.current.kr, isCorrect);
+  recordAnswer(quiz.current.kr, isCorrect, "quiz");
   const answerField = quiz.direction === "fr-to-kr" ? "kr" : "fr";
 
   if (isCorrect) {

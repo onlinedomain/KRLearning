@@ -788,3 +788,277 @@ input { font-family: inherit; }
 
 .typing-feedback.show-correct { color: var(--accent); }
 .typing-feedback.show-wrong { color: #E5707A; }
+
+/* ===================================================================
+   SCORE & PROGRESSION
+=================================================================== */
+.nav-tag.sc { color: #C9A0F5; }
+.nav-item.active .nav-tag.sc { background: rgba(201, 160, 245, 0.18); }
+
+.score-game-picker {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.score-game-btn {
+  padding: 9px 16px;
+  border-radius: 99px;
+  font-size: 13px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  transition: all 0.15s ease;
+}
+
+.score-game-btn:hover { color: var(--text); border-color: var(--accent-dim); }
+
+.score-game-btn.active {
+  background: rgba(201, 160, 245, 0.12);
+  border-color: #C9A0F5;
+  color: #C9A0F5;
+}
+
+.score-empty {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  padding: 80px 20px;
+  color: var(--text-dim);
+}
+.score-empty.show { display: flex; }
+
+.score-dashboard { display: none; flex-direction: column; gap: 20px; }
+.score-dashboard.show { display: flex; }
+
+.score-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.score-stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+
+.score-stat-value {
+  font-family: var(--font-mono);
+  font-size: 26px;
+  font-weight: 600;
+  color: #C9A0F5;
+  display: block;
+}
+
+.score-stat-label {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 4px;
+  display: block;
+}
+
+.score-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+}
+
+.score-panel h3 {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.score-panel-sub {
+  font-size: 12px;
+  color: var(--text-faint);
+  margin-bottom: 16px;
+}
+
+.score-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 760px) {
+  .score-grid-2 { grid-template-columns: 1fr; }
+}
+
+/* ---------- line chart (SVG) ---------- */
+.score-chart {
+  width: 100%;
+  height: 220px;
+  overflow: visible;
+}
+
+.score-chart .grid-line {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.score-chart .axis-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  fill: var(--text-faint);
+}
+
+.score-chart .progress-line {
+  fill: none;
+  stroke: #C9A0F5;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.score-chart .progress-area {
+  fill: rgba(201, 160, 245, 0.08);
+  stroke: none;
+}
+
+.score-chart .progress-dot {
+  fill: #C9A0F5;
+}
+
+.score-chart .progress-dot.dot-low { fill: #E5707A; }
+
+/* ---------- category bars (horizontal) ---------- */
+.score-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.score-bar-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.score-bar-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.score-bar-track {
+  height: 8px;
+  background: var(--surface-raised);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.score-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+/* color scale: red (weak) -> accent (strong) handled inline via style */
+
+/* ---------- toplist (hardest words) ---------- */
+.score-toplist {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.score-toplist-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.score-toplist-rank {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  width: 18px;
+}
+
+.score-toplist-word {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.score-toplist-kr {
+  font-family: var(--font-display);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.score-toplist-fr {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.score-toplist-rate {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: #E5707A;
+  font-weight: 600;
+}
+
+/* ---------- daily practice bars (vertical) ---------- */
+.score-bars-vertical {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 120px;
+}
+
+.score-day-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  gap: 6px;
+}
+
+.score-day-bar {
+  width: 100%;
+  max-width: 28px;
+  background: #C9A0F5;
+  border-radius: 4px 4px 0 0;
+  min-height: 2px;
+  transition: height 0.3s ease;
+}
+
+.score-day-bar.empty { background: var(--border); }
+
+.score-day-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-faint);
+}
+
+.score-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.score-reset-btn {
+  border-color: #E5707A !important;
+  color: #E5707A !important;
+  flex-shrink: 0;
+}
+.score-reset-btn:hover {
+  background: rgba(229, 112, 122, 0.1) !important;
+}

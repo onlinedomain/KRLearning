@@ -114,7 +114,7 @@ function reviewAnswer(btn, opt) {
   allButtons.forEach(b => b.disabled = true);
 
   const isCorrect = opt.kr === review.current.kr;
-  recordAnswer(review.current.kr, isCorrect); // mise à jour des stats globales
+  recordAnswer(review.current.kr, isCorrect, "review");
 
   if (isCorrect) {
     btn.classList.add("correct");

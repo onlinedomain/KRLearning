@@ -119,6 +119,7 @@ function fillblankAnswer(btn, word) {
   allButtons.forEach(b => b.disabled = true);
 
   const isCorrect = word === fillblank.current.blank;
+  recordAnswer(fillblank.current.blank, isCorrect, "fillblank");
 
   if (isCorrect) {
     btn.classList.add("correct");

@@ -103,7 +103,7 @@ function flashReveal() {
 
 function flashRate(knew) {
   const word = flash.sequence[flash.index];
-  recordAnswer(word.kr, knew);
+  recordAnswer(word.kr, knew, "flashcards");
   flash.log.push({ fr: word.fr, kr: word.kr, knew });
 
   if (knew) flash.known++;
