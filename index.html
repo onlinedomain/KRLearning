@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>어휘 — Carnet de vocabulaire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="bg-glyph" aria-hidden="true">학</div>
+
+<div class="app">
+
+  <!-- ===== SIDEBAR NAV ===== -->
+  <nav class="sidebar">
+    <div class="brand">
+      <span class="brand-glyph">語</span>
+      <div class="brand-text">
+        <span class="brand-title">Carnet</span>
+        <span class="brand-sub">de vocabulaire</span>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <span class="nav-label">Langues</span>
+      <button class="nav-item active" data-view="korean">
+        <span class="nav-tag kr">한</span> Coréen
+      </button>
+    </div>
+
+    <div class="nav-group">
+      <span class="nav-label">Pratique</span>
+      <button class="nav-item" data-view="activities">
+        <span class="nav-tag ac">▶</span> Activités
+      </button>
+    </div>
+
+    <div class="sidebar-foot">
+      <span id="word-count">— mots appris</span>
+    </div>
+  </nav>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="content">
+
+    <!-- ---------- KOREAN VIEW ---------- -->
+    <section class="view active" id="view-korean">
+      <header class="view-header">
+        <div class="view-heading">
+          <span class="view-eyebrow">진행 중 · en cours</span>
+          <h1>Vocabulaire coréen</h1>
+        </div>
+        <div class="view-controls">
+          <input type="search" class="search-input" id="kr-search" placeholder="Rechercher un mot, une catégorie...">
+        </div>
+      </header>
+
+      <div class="category-pills" id="kr-pills"></div>
+
+      <div class="card-grid" id="kr-grid"></div>
+    </section>
+
+    <!-- ---------- ACTIVITIES VIEW ---------- -->
+    <section class="view" id="view-activities">
+      <header class="view-header">
+        <div class="view-heading">
+          <span class="view-eyebrow">bientôt · soon</span>
+          <h1>Activités &amp; jeux</h1>
+        </div>
+      </header>
+
+<!-- ---------- Activity picker (shown before a game starts) ---------- -->
+      <div class="activity-grid" id="activity-picker">
+        <article class="activity-card playable" data-game="quiz">
+          <span class="activity-icon">字</span>
+          <h3>Trouve la traduction</h3>
+          <p>Un mot français s'affiche, clique sur sa traduction coréenne parmi plusieurs choix.</p>
+          <span class="activity-status playable">Jouer</span>
+        </article>
+        <article class="activity-card">
+          <span class="activity-icon">配</span>
+          <h3>Memory</h3>
+          <p>Associe le mot français à sa traduction coréenne.</p>
+          <span class="activity-status">À venir</span>
+        </article>
+        <article class="activity-card">
+          <span class="activity-icon">聞</span>
+          <h3>Écoute &amp; reconnais</h3>
+          <p>Entraîne ton oreille sur les sons du hangeul.</p>
+          <span class="activity-status">À venir</span>
+        </article>
+      </div>
+
+      <!-- ---------- Quiz game screen ---------- -->
+      <div class="quiz-wrap" id="quiz-wrap">
+
+        <div class="quiz-setup" id="quiz-setup">
+          <h2>Trouve la traduction</h2>
+          <p class="quiz-setup-sub">Choisis une catégorie et le nombre de choix proposés.</p>
+
+          <label class="quiz-field">
+            <span>Catégorie</span>
+            <select id="quiz-cat"></select>
+          </label>
+
+          <label class="quiz-field">
+            <span>Nombre de choix</span>
+            <select id="quiz-choices">
+              <option value="6">6</option>
+              <option value="8">8</option>
+              <option value="10">10</option>
+            </select>
+          </label>
+
+          <label class="quiz-field">
+            <span>Nombre de mots</span>
+            <select id="quiz-length"></select>
+          </label>
+
+          <button class="btn-primary" id="quiz-start">Commencer</button>
+          <button class="btn-ghost" id="quiz-cancel">Retour</button>
+        </div>
+
+        <div class="quiz-game" id="quiz-game">
+          <div class="quiz-top">
+            <span class="quiz-progress" id="quiz-progress">1 / 10</span>
+            <span class="quiz-score" id="quiz-score">0 ✅ · 0 ❌</span>
+          </div>
+
+          <div class="quiz-prompt">
+            <span class="quiz-prompt-label">Traduis en coréen</span>
+            <span class="quiz-prompt-word" id="quiz-word">mot</span>
+          </div>
+
+          <div class="quiz-options" id="quiz-options"></div>
+
+          <button class="btn-ghost" id="quiz-quit">Arrêter</button>
+        </div>
+
+        <div class="quiz-result" id="quiz-result">
+          <h2>Résultat</h2>
+          <p class="quiz-result-score" id="quiz-result-score">0 / 0</p>
+          <p class="quiz-result-sub" id="quiz-result-sub"></p>
+          <ul class="quiz-result-list" id="quiz-result-list"></ul>
+          <button class="btn-primary" id="quiz-replay">Rejouer</button>
+          <button class="btn-ghost" id="quiz-back">Retour aux activités</button>
+        </div>
+
+      </div>
+    </section>
+    </section>
+
+  </main>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/quiz.js"></script>
+
+
+</body>
+</html>
