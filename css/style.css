@@ -1193,3 +1193,31 @@ input { font-family: inherit; }
 .word-card.speaking {
   border-color: var(--accent);
 }
+
+.option-slider-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  cursor: default;
+}
+
+.option-slider-row > span:first-child {
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+.option-slider-row input[type="range"] {
+  width: 100%;
+  height: 4px;
+  border-radius: 99px;
+  background: var(--surface);
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.option-slider-value {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  align-self: flex-end;
+}

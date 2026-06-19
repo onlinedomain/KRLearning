@@ -59,6 +59,35 @@
         </div>
         <div class="view-controls">
           <input type="search" class="search-input" id="kr-search" placeholder="Rechercher un mot, une catégorie...">
+          <button class="btn-ghost options-toggle" id="options-toggle">⚙ Options</button>
+
+          <div class="options-panel" id="options-panel">
+            <label class="option-row">
+              <input type="checkbox" id="opt-romanization">
+              <span>Afficher la romanisation sur les cartes</span>
+            </label>
+            <label class="option-row">
+              <input type="checkbox" id="opt-jamo" checked>
+              <span>Décomposer le mot en jamo au survol</span>
+            </label>
+            <label class="option-row">
+              <input type="checkbox" id="opt-compact">
+              <span>Mode compact (grille plus dense)</span>
+            </label>
+            <label class="option-row">
+              <input type="checkbox" id="opt-flip">
+              <span>Afficher le coréen en premier (au lieu du français)</span>
+            </label>
+            <label class="option-row">
+              <input type="checkbox" id="opt-sound" checked>
+              <span>Prononciation au clic sur une carte</span>
+            </label>
+            <div class="option-row option-slider-row">
+              <span>Volume de la voix</span>
+              <input type="range" id="opt-volume" min="0" max="100" value="100">
+              <span class="option-slider-value" id="opt-volume-value">100%</span>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -76,7 +105,7 @@
         </div>
       </header>
 
-<!-- ---------- Activity picker (shown before a game starts) ---------- -->
+
 <!-- ---------- Activity picker (shown before a game starts) ---------- -->
       <div class="activity-grid" id="activity-picker">
         <article class="activity-card playable" data-game="quiz">
@@ -518,7 +547,7 @@
           <p class="score-panel-sub">Nombre de mots travaillés par jour, sur les 14 derniers jours.</p>
           <div class="score-bars-vertical" id="chart-daily"></div>
         </div>
-        
+
         <div class="score-toolbar">
           <div class="score-game-picker" id="score-game-picker"></div>
           <button class="btn-ghost score-reset-btn" id="score-reset-all">Réinitialiser tout l'historique</button>
@@ -532,6 +561,9 @@
 </div>
 
 <script src="js/data.js"></script>
+<script src="js/romanize.js"></script>
+<script src="js/speech.js"></script>
+<script src="js/preferences.js"></script>
 <script src="js/stats.js"></script>
 <script src="js/sentences.js"></script>
 <script src="js/app.js"></script>

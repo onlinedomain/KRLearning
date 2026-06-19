@@ -61,17 +61,36 @@ function renderGrid(gridEl, pillsEl, data, activeCategory, query, isEnglish) {
     );
   }
 
-  // Cards
+// Cards
   gridEl.innerHTML = "";
   filtered.forEach(word => {
     const card = document.createElement("div");
-    card.className = "word-card";
+
+    let cardClass = "word-card";
+    if (!isEnglish && userPrefs.showRomanization) cardClass += " show-roma";
+    if (!isEnglish && !userPrefs.showJamoOnHover) cardClass += " no-jamo-hover";
+    if (!isEnglish && userPrefs.flipCards) cardClass += " flipped";
+    card.className = cardClass;
+
+    const romaLine = !isEnglish ? `<div class="roma">${romanize(word.kr)}</div>` : "";
+    const jamoLine = !isEnglish ? `<div class="jamo">${decomposeHangul(word.kr)}</div>` : "";
+    const soundIcon = !isEnglish && userPrefs.soundEnabled ? `<span class="sound-icon">🔊</span>` : "";
+
+    if (!isEnglish && userPrefs.soundEnabled) card.classList.add("sound-enabled");
+
     card.innerHTML = `
       <span class="cat-tag">${word.cat}</span>
       <div class="fr">${word.fr}</div>
       <div class="kr">${word.kr}</div>
-      ${!isEnglish ? `<div class="jamo">${decomposeHangul(word.kr)}</div>` : ""}
+      ${romaLine}
+      ${jamoLine}
+      ${soundIcon}
     `;
+
+    if (!isEnglish && userPrefs.soundEnabled) {
+      card.addEventListener("click", () => speakKorean(word.kr, card));
+    }
+
     gridEl.appendChild(card);
   });
 
