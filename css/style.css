@@ -176,6 +176,13 @@ input { font-family: inherit; }
   to { opacity: 1; transform: translateY(0); }
 }
 
+.view-controls {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .view-header {
   display: flex;
   justify-content: space-between;
@@ -1061,4 +1068,128 @@ input { font-family: inherit; }
 }
 .score-reset-btn:hover {
   background: rgba(229, 112, 122, 0.1) !important;
+}
+
+.options-toggle {
+  white-space: nowrap;
+  position: relative;
+}
+
+.options-panel {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  width: 280px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  z-index: 50;
+}
+
+.options-panel.show { display: flex; }
+
+.option-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+.option-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* romanization display on cards */
+.word-card .roma {
+  display: none;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-faint);
+  margin-top: 2px;
+}
+
+.word-card.show-roma .roma { display: block; }
+
+/* when jamo-on-hover is disabled, never show it */
+.word-card.no-jamo-hover:hover .jamo { display: none; }
+.word-card.no-jamo-hover:hover .kr { opacity: 1; }
+
+/* ---------- compact mode ---------- */
+.card-grid.compact {
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+}
+
+.card-grid.compact .word-card {
+  padding: 12px 14px 10px;
+  min-height: 72px;
+}
+
+.card-grid.compact .word-card .cat-tag {
+  font-size: 9px;
+  margin-bottom: 5px;
+}
+
+.card-grid.compact .word-card .fr {
+  font-size: 13px;
+  margin-bottom: 3px;
+}
+
+.card-grid.compact .word-card .kr {
+  font-size: 17px;
+}
+
+.card-grid.compact .word-card .roma {
+  font-size: 10px;
+}
+
+.card-grid.compact .word-card .jamo {
+  font-size: 9px;
+  bottom: 10px;
+}
+
+/* ---------- flipped cards (Korean first) ---------- */
+.word-card.flipped .fr {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.word-card.flipped .kr {
+  font-family: var(--font-ui);
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* ---------- sound-enabled cards ---------- */
+.word-card.sound-enabled { cursor: pointer; }
+
+.word-card .sound-icon {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-size: 13px;
+  color: var(--text-faint);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.word-card.sound-enabled:hover .sound-icon { opacity: 1; }
+
+.word-card.speaking {
+  border-color: var(--accent);
 }
