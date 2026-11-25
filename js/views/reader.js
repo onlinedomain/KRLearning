@@ -178,7 +178,7 @@ export function mountReader(root, id) {
       }).join(' ');
       return `<div class="para${open ? ' tr-open' : ''}" data-p="${pi}">
         <p class="ko" lang="ko">${sp ? `<span class="speaker">${esc(sp[1])}</span>` : ''}${inner}</p>
-        <button class="tr-btn" data-act="tr" aria-label="Traduction du paragraphe" aria-expanded="${open}">EN</button>
+        <button class="tr-btn" data-act="tr" aria-expanded="${open}"><b>EN</b>${open ? 'Masquer la traduction' : 'Traduction'}</button>
         ${open ? trHtml(p, pi) : ''}
       </div>`;
     }).join('');

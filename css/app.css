@@ -363,15 +363,24 @@ select.input { appearance: none; padding-right: 36px; background-image: linear-g
 .tip button { margin-left: auto; flex: none; }
 
 .text-body { margin-top: 12px; }
-.para { position: relative; margin: 0 0 6px; padding: 6px 40px 6px 0; border-radius: 10px; }
+.para { position: relative; margin: 0 0 10px; padding: 6px 0 0; border-radius: 10px; }
 .para .ko {
   margin: 0; font-family: var(--read-font); font-size: var(--read-size); line-height: var(--read-lh);
   word-break: keep-all; overflow-wrap: anywhere;
   -webkit-touch-callout: none; -webkit-user-select: none; user-select: none;
 }
 .para .speaker { font-family: var(--font-ui); font-size: .72em; font-weight: 700; color: var(--accent-ink); background: var(--accent-soft); padding: 1px 8px; border-radius: 999px; margin-right: 6px; vertical-align: .12em; }
-.para .tr-btn { position: absolute; right: 0; top: 8px; width: 34px; height: 34px; border-radius: 10px; border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: 11px; font-weight: 800; letter-spacing: .02em; }
-.para .tr-btn:hover, .para.tr-open .tr-btn { background: var(--surface-2); color: var(--accent-ink); }
+/* Translation toggle sits under the paragraph (small pill), text keeps full width. */
+.para .tr-btn {
+  display: inline-flex; align-items: center; gap: 5px; margin: 2px 0 4px; height: 28px; padding: 0 10px 0 8px;
+  border-radius: 999px; border: 1px solid transparent; background: transparent; color: var(--muted);
+  cursor: pointer; font-size: 12px; font-weight: 700; letter-spacing: .02em; transition: background .15s, color .15s;
+}
+.para .tr-btn b { font-weight: 800; font-size: 11px; padding: 1px 5px; border-radius: 6px; background: var(--surface-2); color: var(--ink-2); }
+.para .tr-btn:hover { background: var(--surface-2); color: var(--ink-2); }
+.para.tr-open .tr-btn { color: var(--accent-ink); }
+.para.tr-open .tr-btn b { background: var(--accent-soft-2); color: var(--accent-ink); }
+.para .tr { margin-top: 0; }
 .para .tr { margin: 6px 0 10px; padding: 10px 14px; border-left: 3px solid var(--accent-soft-2); color: var(--ink-2); font-size: 15.5px; line-height: 1.6; background: color-mix(in srgb, var(--surface-2) 55%, transparent); border-radius: 0 10px 10px 0; animation: fade .2s ease both; }
 .para .tr .pair { margin: 0 0 8px; }
 .para .tr .pair:last-child { margin-bottom: 0; }
