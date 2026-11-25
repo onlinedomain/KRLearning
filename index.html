@@ -29,12 +29,12 @@
 </head>
 <body>
   <header class="topbar">
+    <a class="brand" href="#/" aria-label="다독+ · retour à la bibliothèque"><span class="brand-ko">다독</span><span class="brand-plus">+</span></a>
+    <nav class="topnav" aria-label="Navigation principale"></nav>
+    <div class="topbar-right"></div>
     <button class="icon-btn burger" data-action="drawer-open" aria-label="Ouvrir le menu" aria-controls="drawer" aria-expanded="false">
       <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
     </button>
-    <a class="brand" href="#/"><span class="brand-ko">다독</span><span class="brand-plus">+</span></a>
-    <nav class="topnav" aria-label="Navigation principale"></nav>
-    <div class="topbar-right"></div>
   </header>
 
   <div class="drawer-scrim" data-action="drawer-close" hidden></div>
@@ -50,6 +50,12 @@
   </aside>
 
   <main id="view" tabindex="-1"><div class="loading">Chargement…</div></main>
+
+  <a class="fab" hidden></a>
+  <button class="to-top" type="button" aria-label="Revenir en haut de la page" hidden>
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+  </button>
+  <nav class="tabbar" aria-label="Navigation rapide"></nav>
 
   <div id="sheet-root"></div>
   <div id="toast-root" aria-live="polite"></div>

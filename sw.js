@@ -1,7 +1,7 @@
 // Offline support. App files + texts are precached; Google Fonts are cached on
 // first use. The recorded audio is streamed from the web (not cached): offline,
 // the app falls back to the device's speech synthesis.
-const VERSION = 'dadok-plus-v1';
+const VERSION = 'dadok-plus-v2';
 const CORE = [
   './', 'index.html', 'manifest.json', 'css/app.css',
   'js/app.js', 'js/util.js', 'js/store.js', 'js/data.js', 'js/text.js', 'js/srs.js', 'js/audio.js',

@@ -1,5 +1,5 @@
 // Library: continue reading, search, many filters, sorting, grouping.
-import { rerender } from '../app.js';
+import { rerender, setFab } from '../app.js';
 import { db, TYPES, TOPICS_FR, LEVELS } from '../data.js';
 import { state, save, streak, wordKey } from '../store.js';
 import { dueCount } from '../srs.js';
@@ -140,6 +140,8 @@ export function mountLibrary(root) {
     <div class="text-list" id="list"></div>
   `);
 
+  const nextUp = ct || db.order.find((t) => !state.texts[t.id]?.read);
+  if (nextUp) setFab({ label: ct ? 'Continuer' : (readCount ? 'Texte suivant' : 'Commencer'), icon: 'play', href: `#/t/${nextUp.id}` });
   const listEl = $('#list', root);
   function renderList() {
     const list = filterTexts(f);

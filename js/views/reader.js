@@ -8,7 +8,7 @@ import {
 } from '../store.js';
 import { html, raw, esc, icon, levelBadge, openSheet, closeSheet, toast, speak, onSwipe, $, $$ } from '../util.js';
 import { Player } from '../audio.js';
-import { applySettings } from '../app.js';
+import { applySettings, setFab } from '../app.js';
 
 const RATES = [0.75, 0.9, 1, 1.15, 1.3];
 
@@ -443,7 +443,10 @@ export function mountReader(root, id) {
   addEventListener('scroll', scrollHandler, { passive: true });
 
   const endObs = new IntersectionObserver((ents) => {
-    if (ents.some((x) => x.isIntersecting) && !ts.read && Date.now() - started > 20000) setRead(true);
+    // "Reached the end of the text" = sentinel visible or already scrolled past.
+    const vis = ents.some((x) => x.isIntersecting || x.boundingClientRect.top < 0);
+    setFab(vis && next ? { label: 'Texte suivant', icon: 'next', href: `#/t/${next.id}` } : null);
+    if (vis && !ts.read && Date.now() - started > 20000) setRead(true);
   });
   endObs.observe($('.end-sentinel', root));
 

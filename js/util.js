@@ -92,7 +92,8 @@ export function openSheet(content, { onClose, label = 'Fenêtre' } = {}) {
     if (dy > 110) close(); else sheet.style.transform = '';
   });
   sheetCleanup = () => { document.removeEventListener('keydown', key); onClose?.(); };
-  setTimeout(() => sheet.querySelector('button:not(.close), input, a')?.focus({ preventScroll: true }), 50);
+  // Focus the first button (never a text field: that would pop up the phone keyboard).
+  setTimeout(() => sheet.querySelector('.sheet-body button, .sheet-body a')?.focus({ preventScroll: true, focusVisible: false }), 50);
   return sheet;
 }
 export function closeSheet() {
@@ -108,7 +109,8 @@ export function closeSheet() {
 export function onSwipe(el, { onSwipe: cb, onMove, threshold = 80, enabled = () => true }) {
   let x0, y0, dx, locked, active = false;
   el.addEventListener('touchstart', (e) => {
-    if (!enabled() || e.touches.length !== 1) return;
+    // Touches starting on the right edge belong to the "open menu" gesture.
+    if (!enabled() || e.touches.length !== 1 || e.touches[0].clientX > innerWidth - 24) return;
     x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; dx = 0; locked = null; active = true;
   }, { passive: true });
   el.addEventListener('touchmove', (e) => {

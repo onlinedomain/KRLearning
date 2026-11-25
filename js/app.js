@@ -5,10 +5,10 @@ import { dueCount } from './srs.js';
 import { icon, onSwipe, closeSheet, $, $$ } from './util.js';
 
 const NAV = [
-  { href: '#/', id: 'library', label: 'Bibliothèque', icon: 'book' },
-  { href: '#/words', id: 'words', label: 'Banque de mots', icon: 'bank' },
-  { href: '#/cards', id: 'cards', label: 'Flashcards', icon: 'cards' },
-  { href: '#/stats', id: 'stats', label: 'Statistiques', icon: 'stats' },
+  { href: '#/', id: 'library', label: 'Bibliothèque', icon: 'book', tab: true },
+  { href: '#/words', id: 'words', label: 'Banque de mots', short: 'Mots', icon: 'bank', tab: true },
+  { href: '#/cards', id: 'cards', label: 'Flashcards', short: 'Cartes', icon: 'cards', tab: true },
+  { href: '#/stats', id: 'stats', label: 'Statistiques', short: 'Stats', icon: 'stats', tab: true },
   { href: '#/backup', id: 'backup', label: 'Sauvegarde & transfert', icon: 'backup', sep: true },
   { href: '#/settings', id: 'settings', label: 'Paramètres', icon: 'settings' },
 ];
@@ -40,6 +40,9 @@ function renderNav(active) {
   $('.drawer-nav').innerHTML = NAV.map((n) => `${n.sep ? '<hr>' : ''}<a href="${n.href}" class="${n.id === active ? 'on' : ''}" ${n.id === active ? 'aria-current="page"' : ''}>${icon(n.icon)}${n.label}${count(n.id)}</a>`).join('');
   $('.topbar-right').innerHTML = due && active !== 'cards'
     ? `<a class="btn sm soft" href="#/cards" aria-label="${due} cartes à réviser">${icon('cards', 16)} ${due}</a>` : '';
+  $('.tabbar').innerHTML = NAV.filter((n) => n.tab).map((n) =>
+    `<a href="${n.href}" class="${n.id === active || (active === 'reader' && n.id === 'library') ? 'on' : ''}" ${n.id === active ? 'aria-current="page"' : ''}>
+      <span class="ti">${icon(n.icon, 22)}</span>${n.short || n.label}${n.id === 'cards' && due ? `<span class="tb">${due}</span>` : ''}</a>`).join('');
   const st = state.meta.lastBackup;
   $('.drawer-foot').innerHTML = `Niveaux 1 à 4 · 326 textes<br>${!st || Date.now() - st > 7 * 864e5 ? '⚠️ Pense à sauvegarder tes données' : 'Données sauvegardées récemment ✓'}`;
 }
@@ -64,7 +67,52 @@ document.addEventListener('click', (e) => {
   if (e.target.closest('.drawer-nav a')) closeDrawer();
 });
 document.addEventListener('keydown', (e) => e.key === 'Escape' && closeDrawer());
-onSwipe(drawer, { onSwipe: (d) => d === 'left' && closeDrawer(), enabled: () => true, threshold: 60 });
+onSwipe(drawer, { onSwipe: (d) => d === 'right' && closeDrawer(), enabled: () => true, threshold: 60 });
+
+// Swipe in from the right edge of the screen opens the menu.
+(() => {
+  let x0 = null, y0 = 0;
+  document.addEventListener('touchstart', (e) => {
+    const t = e.touches[0];
+    x0 = state.settings.gestures && e.touches.length === 1 && t.clientX > innerWidth - 24 && !drawer.classList.contains('open') && !$('.sheet') ? t.clientX : null;
+    y0 = t.clientY;
+  }, { passive: true });
+  document.addEventListener('touchmove', (e) => {
+    if (x0 == null) return;
+    const t = e.touches[0], dx = t.clientX - x0, dy = Math.abs(t.clientY - y0);
+    if (dy > 40) x0 = null;
+    else if (dx < -50) { x0 = null; openDrawer(); }
+  }, { passive: true });
+})();
+
+// ---------- Scroll: hide the tab bar while reading down, show it on the way up ----------
+let lastY = scrollY;
+const fabEl = $('.fab'), topBtn = $('.to-top');
+addEventListener('scroll', () => {
+  const y = scrollY, dy = y - lastY;
+  const nearBottom = y + innerHeight >= document.documentElement.scrollHeight - 40;
+  if (Math.abs(dy) > 6) {
+    const hide = dy > 0 && y > 120 && !nearBottom;
+    document.body.classList.toggle('tabs-hidden', hide);
+    fabEl.classList.toggle('mini', hide);
+    lastY = y;
+  }
+  if (nearBottom) document.body.classList.remove('tabs-hidden');
+  topBtn.hidden = !(showTopBtn && y > 1400);
+}, { passive: true });
+topBtn.addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
+let showTopBtn = false;
+
+// ---------- Contextual action button ----------
+// setFab({ label, icon, href }) or setFab(null). Views call it after mounting.
+export function setFab(cfg) {
+  if (!cfg) { fabEl.hidden = true; fabEl.removeAttribute('href'); return; }
+  fabEl.hidden = false;
+  fabEl.href = cfg.href;
+  fabEl.setAttribute('aria-label', cfg.label);
+  fabEl.innerHTML = `${icon(cfg.icon || 'next', 22)}<span>${cfg.label}</span>`;
+  fabEl.classList.remove('mini');
+}
 
 // ---------- Router ----------
 const view = $('#view');
@@ -99,10 +147,15 @@ async function route() {
   try { cleanup?.(); } catch (e) { console.error(e); }
   cleanup = null;
   // Fresh element so old listeners from the previous view are dropped.
-  const fresh = viewRef.cloneNode(false);
-  fresh.className = '';
+  // (A brand-new element, not a clone: a clone would copy data-* flags such as
+  // data-bound and the next view would think its listeners are already attached.)
+  const fresh = Object.assign(document.createElement('main'), { id: 'view', tabIndex: -1 });
   viewRef.replaceWith(fresh);
   viewRef = fresh;
+  setFab(null);
+  document.body.classList.remove('tabs-hidden');
+  showTopBtn = id === 'library' || id === 'words';
+  topBtn.hidden = true;
   cleanup = mount(fresh, arg) || null;
   renderNav(id);
   document.title = `${id === 'reader' ? (document.querySelector('.reader h1')?.textContent + ' · ') : ''}다독+`;

@@ -1,7 +1,8 @@
 // Word bank: search, filter, one-tap remove (with undo), swipe-to-remove.
+import { setFab } from '../app.js';
 import { posFr } from '../data.js';
 import { state, save, removeWord, setWordStatus, dictUrl } from '../store.js';
-import { isDue, isNew, fmtIvl } from '../srs.js';
+import { isDue, isNew, fmtIvl, dueCount } from '../srs.js';
 import { html, raw, esc, icon, toast, openSheet, closeSheet, speak, debounce, $, $$ } from '../util.js';
 
 const FILTERS = { all: 'Tous', learning: 'À apprendre', due: 'À réviser', known: 'Connus', custom: 'Ajoutés par moi' };
@@ -33,6 +34,8 @@ export function mountWords(root) {
 
   function render() {
     const all = words();
+    const due = dueCount();
+    setFab(due ? { label: `Réviser ${due} carte${due > 1 ? 's' : ''}`, icon: 'cards', href: '#/cards' } : null);
     $('#wsum', root).textContent = `${all.length} mot${all.length > 1 ? 's' : ''} · ${all.filter((w) => w.status === 'known').length} connu${all.filter((w) => w.status === 'known').length > 1 ? 's' : ''}`;
     Object.keys(FILTERS).forEach((k) => { $(`[data-n="${k}"]`, root).textContent = all.filter(match[k]).length; });
     const q = ui.q.trim().toLowerCase();
