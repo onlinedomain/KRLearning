@@ -2,7 +2,7 @@
 import { loadData } from './data.js';
 import { state, subscribe } from './store.js';
 import { dueCount } from './srs.js';
-import { icon, onSwipe, closeSheet, $, $$ } from './util.js';
+import { icon, onSwipe, closeSheet, toast, $, $$ } from './util.js';
 
 const NAV = [
   { href: '#/', id: 'library', label: 'Bibliothèque', icon: 'book', tab: true },
@@ -184,7 +184,50 @@ loadData().then(() => {
 // Offline cache (skipped on localhost so edits show up immediately; add ?sw to test it).
 const devHost = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) && !location.search.includes('sw');
 if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !devHost) {
-  addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  const hadController = !!navigator.serviceWorker.controller;
+  addEventListener('load', () => navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).catch(() => {}));
+  // A new service worker took over: reload right away if we just opened the app,
+  // otherwise offer it (don't interrupt a reading in progress).
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController) return;
+    if (performance.now() < 6000) location.reload();
+    else offerReload();
+  });
 }
+
+// ---------- New version detection ----------
+// When the app comes back to the foreground (a phone PWA stays in memory for
+// days), ask the server whether any app file changed since this page loaded.
+const WATCH = ['index.html', 'css/app.css', 'js/app.js', 'js/util.js', 'js/store.js', 'js/data.js', 'js/text.js',
+  'js/srs.js', 'js/audio.js', 'js/views/library.js', 'js/views/reader.js', 'js/views/words.js', 'js/views/cards.js',
+  'js/views/stats.js', 'js/views/settings.js', 'js/views/backup.js', 'data/texts.json'];
+const stamp = async (f) => {
+  const r = await fetch(f, { method: 'HEAD', cache: 'no-store' });
+  return r.ok ? (r.headers.get('etag') || r.headers.get('last-modified')) : null;
+};
+const signature = () => Promise.all(WATCH.map((f) => stamp(f).catch(() => null)));
+let baseline = null, offered = false, lastCheck = 0;
+export async function checkForUpdate() {
+  if (!navigator.onLine || offered) return false;
+  lastCheck = Date.now();
+  const now = await signature();
+  if (!baseline) { baseline = now; return false; }
+  const changed = now.some((s, i) => s && baseline[i] && s !== baseline[i]);
+  if (changed) offerReload();
+  return changed;
+}
+function offerReload() {
+  if (offered) return;
+  offered = true;
+  toast('Nouvelle version de l’appli disponible', { action: 'Mettre à jour', ms: 60000, onAction: () => location.reload() });
+}
+addEventListener('load', () => setTimeout(checkForUpdate, 3000));
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && Date.now() - lastCheck > 60000) {
+    navigator.serviceWorker?.getRegistration().then((r) => r?.update()).catch(() => {});
+    checkForUpdate();
+  }
+});
+setInterval(() => document.visibilityState === 'visible' && checkForUpdate(), 10 * 60000);
 // Ask the browser not to evict our data (helps on phones).
 if (navigator.storage?.persist) navigator.storage.persisted().then((p) => p || navigator.storage.persist()).catch(() => {});

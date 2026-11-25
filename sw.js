@@ -1,7 +1,7 @@
 // Offline support. App files + texts are precached; Google Fonts are cached on
 // first use. The recorded audio is streamed from the web (not cached): offline,
 // the app falls back to the device's speech synthesis.
-const VERSION = 'dadok-plus-v2';
+const VERSION = 'dadok-plus-v3';
 const CORE = [
   './', 'index.html', 'manifest.json', 'css/app.css',
   'js/app.js', 'js/util.js', 'js/store.js', 'js/data.js', 'js/text.js', 'js/srs.js', 'js/audio.js',
@@ -38,7 +38,9 @@ self.addEventListener('fetch', (e) => {
   // Same origin: network first (so updates show up at once), cache if offline
   // or if the network takes more than 3 s.
   e.respondWith(caches.open(VERSION).then(async (c) => {
-    const net = fetch(req).then((res) => { if (res.ok) c.put(req, res.clone()); return res; });
+    // cache: 'no-cache' = always ask the server "has it changed?" (ETag), so the
+    // browser's own HTTP cache (10 min on GitHub Pages) can't serve an old version.
+    const net = fetch(req, { cache: 'no-cache' }).then((res) => { if (res.ok) c.put(req, res.clone()); return res; });
     const timeout = new Promise((r) => setTimeout(r, 3000));
     try {
       const res = await Promise.race([net, timeout]);
