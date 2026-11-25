@@ -25,9 +25,10 @@ export function applySettings() {
   root.style.setProperty('--read-font', S.readFont === 'serif' ? 'var(--font-serif-ko)' : 'var(--font-sans-ko)');
   const body = $('.text-body');
   if (body) { body.classList.toggle('show-known', S.showKnown); body.classList.toggle('hide-gloss', !S.showGloss); }
-  requestAnimationFrame(() => {
-    $('meta[name="theme-color"]').content = getComputedStyle(document.body).backgroundColor;
-  });
+  // Phone status bar colour. Read the --bg token, NOT body's computed background:
+  // body animates its background (0.25 s), so it would still hold the OLD theme.
+  root.style.colorScheme = mode;
+  $('meta[name="theme-color"]').content = getComputedStyle(root).getPropertyValue('--bg').trim() || (mode === 'dark' ? '#1A1613' : '#FAF6EE');
 }
 mq.addEventListener('change', () => state.settings.mode === 'auto' && applySettings());
 

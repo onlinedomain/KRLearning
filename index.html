@@ -24,6 +24,10 @@
       if (m === 'auto') m = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       document.documentElement.dataset.style = s.style || 'hanji';
       document.documentElement.dataset.mode = m;
+      document.documentElement.style.colorScheme = m;
+      // Status bar colour right from the first frame (app.js keeps it in sync after).
+      var BG = { hanji: ['#FAF6EE', '#1A1613'], clair: ['#F5F6FB', '#11131B'], jade: ['#F2F6F2', '#0F1613'], encre: ['#FFFFFF', '#0D0D0D'] };
+      document.querySelector('meta[name="theme-color"]').content = (BG[s.style || 'hanji'] || BG.hanji)[m === 'dark' ? 1 : 0];
     } catch (e) {}
   </script>
 </head>
