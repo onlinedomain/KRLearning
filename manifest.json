@@ -1,0 +1,23 @@
+{
+  "name": "다독+ · Lecture coréenne",
+  "short_name": "다독+",
+  "description": "Lecteur gradué de coréen (niveaux 1 à 4) : textes, audio, banque de mots, flashcards.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAF6EE",
+  "theme_color": "#FAF6EE",
+  "categories": ["education", "books"],
+  "icons": [
+    { "src": "icons/icon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any" },
+    { "src": "icons/icon-192.png", "type": "image/png", "sizes": "192x192", "purpose": "any" },
+    { "src": "icons/icon-512.png", "type": "image/png", "sizes": "512x512", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "type": "image/png", "sizes": "512x512", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Flashcards", "url": "./#/cards" },
+    { "name": "Banque de mots", "url": "./#/words" }
+  ]
+}
