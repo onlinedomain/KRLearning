@@ -1,7 +1,7 @@
 // Word bank: search, filter, one-tap remove (with undo), swipe-to-remove.
 import { setFab } from '../app.js';
-import { posFr } from '../data.js';
-import { state, save, removeWord, setWordStatus, dictUrl } from '../store.js';
+import { db, posFr, POS_FR } from '../data.js';
+import { state, save, addWord, removeWord, setWordStatus, dictUrl, wordKey } from '../store.js';
 import { isDue, isNew, fmtIvl, dueCount } from '../srs.js';
 import { html, raw, esc, icon, toast, openSheet, closeSheet, speak, debounce, $, $$ } from '../util.js';
 
@@ -15,7 +15,10 @@ export function mountWords(root) {
     <div class="page-head row" style="align-items:flex-end;flex-wrap:wrap">
       <div><h1>Ma banque de mots</h1><p id="wsum"></p></div>
       <span class="spacer"></span>
-      <a class="btn primary" href="#/cards">${raw(icon('cards', 18))} Réviser</a>
+      <div class="row" style="gap:8px">
+        <button class="btn primary" data-add>${raw(icon('plus', 18))} Ajouter un mot</button>
+        <a class="btn" href="#/cards">${raw(icon('cards', 18))} Réviser</a>
+      </div>
     </div>
     <div class="search" style="margin-top:12px">${raw(icon('search', 18))}
       <input class="input" type="search" id="wq" placeholder="Chercher un mot ou un sens" value="${ui.q}" aria-label="Chercher dans ma banque"></div>
@@ -46,7 +49,7 @@ export function mountWords(root) {
     if (ui.sort === 'hard') list.sort((a, b) => (b.srs?.lapses || 0) - (a.srs?.lapses || 0));
     const wl = $('#wl', root);
     if (!all.length) {
-      wl.innerHTML = `<div class="empty"><b>Ta banque est vide</b>Ouvre un texte et touche un mot souligné pour l’ajouter.<br><br><a class="btn primary" href="#/">Aller à la bibliothèque</a></div>`;
+      wl.innerHTML = `<div class="empty"><b>Ta banque est vide</b>Ouvre un texte et touche un mot pour l’ajouter, ou ajoute-le toi-même.<br><br><button class="btn primary" data-add>${icon('plus', 18)} Ajouter un mot</button> <a class="btn" href="#/">Aller à la bibliothèque</a></div>`;
       return;
     }
     if (!list.length) { wl.innerHTML = '<div class="empty"><b>Aucun mot</b>Rien ne correspond à ce filtre.</div>'; return; }
@@ -95,10 +98,11 @@ export function mountWords(root) {
   $('#wq', root).addEventListener('input', debounce((e) => { ui.q = e.target.value; render(); }, 120));
   $('#wsort', root).addEventListener('change', (e) => { ui.sort = e.target.value; render(); });
   root.addEventListener('click', (e) => {
+    if (e.target.closest('[data-add]')) { addWordSheet(render); return; }
     const f = e.target.closest('[data-f]');
     if (f) { ui.f = f.dataset.f; $$('[data-f]', root).forEach((b) => b.classList.toggle('on', b === f)); render(); return; }
     const a = e.target.closest('[data-a]');
-    if (!a) return;
+    if (!a?.closest('.wrow')) return;
     const key = a.closest('.wrow').dataset.k;
     if (a.dataset.a === 'remove') remove(key);
     if (a.dataset.a === 'known') {
@@ -114,8 +118,9 @@ export function mountWords(root) {
 function wordDetail(key, after) {
   const w = state.words[key];
   const sheet = openSheet(`
-    <div class="word-head"><span class="w-big" lang="ko">${esc(w.word)}</span>${w.pos ? `<span class="tag">${esc(posFr(w.pos))}</span>` : ''}</div>
+    <div class="word-head"><span class="w-big" lang="ko">${esc(w.word)}</span>${w.custom ? '<span class="tag">ajouté à la main</span>' : ''}</div>
     <div class="field"><label for="dm">Sens</label><input id="dm" class="input" value="${esc(w.meaning)}"></div>
+    <div class="field"><label for="dp">Classe grammaticale</label>${posSelect('dp', w.pos)}</div>
     <div class="field"><label for="df">Formes reconnues dans les textes (séparées par des virgules)</label><input id="df" class="input" lang="ko" value="${esc((w.forms || []).join(', '))}"></div>
     ${w.src?.sentence ? `<div class="ctx"><div class="k" lang="ko">${esc(w.src.sentence)}</div><div class="e">${esc(w.src.en || '')}</div>
       <div class="small muted" style="margin-top:6px">— <a href="#/t/${esc(w.src.id)}">${esc(w.src.title)}</a></div></div>` : ''}
@@ -129,6 +134,7 @@ function wordDetail(key, after) {
   const commit = () => {
     if (!state.words[key]) return;
     w.meaning = $('#dm', sheet).value.trim();
+    w.pos = $('#dp', sheet).value;
     w.forms = [...new Set($('#df', sheet).value.split(/[,，]/).map((s) => s.trim()).filter(Boolean).concat(w.word))];
     w.updated = Date.now(); save();
   };
@@ -142,5 +148,83 @@ function wordDetail(key, after) {
       closeSheet();
       toast(`« ${key} » retiré`, { action: 'Annuler', onAction: () => { undo(); after(); } });
     }
+  });
+}
+
+// ---------- Manual add ----------
+// One option per French label (POS_FR maps several English codes to the same label).
+const POS_OPTIONS = [...new Map(Object.entries(POS_FR).map(([k, v]) => [v, k])).entries()];
+
+function posSelect(id, value = '') {
+  const opts = POS_OPTIONS.map(([fr, code]) => `<option value="${code}" ${value && posFr(value) === fr ? 'selected' : ''}>${fr}</option>`);
+  // Keep a value we don't list (e.g. "noun/verb" from the texts) selectable as-is.
+  if (value && !POS_OPTIONS.some(([fr]) => fr === posFr(value))) opts.unshift(`<option value="${esc(value)}" selected>${esc(posFr(value))}</option>`);
+  return `<select id="${id}" class="input"><option value="">— non précisée —</option>${opts.join('')}</select>`;
+}
+
+// Every word from the texts' vocab/gloss lists, built once on first use.
+let lexicon = null;
+function lookup(word) {
+  if (!lexicon) {
+    lexicon = new Map();
+    for (const t of db.texts) for (const v of [...(t.vocab || []), ...(t.gloss || [])]) if (v.word && !lexicon.has(v.word)) lexicon.set(v.word, v);
+  }
+  return lexicon.get(word);
+}
+
+function addWordSheet(after) {
+  const sheet = openSheet(`
+    <h2 style="margin:0 40px 4px 0">Ajouter un mot</h2>
+    <p class="small muted" style="margin:0">Il sera souligné partout dans les textes et ajouté à tes cartes.</p>
+    <form id="aw" novalidate>
+      <div class="field"><label for="aw-k">Mot coréen</label>
+        <input id="aw-k" class="input" lang="ko" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="ex. 지하철"></div>
+      <div id="aw-hint"></div>
+      <div class="field"><label for="aw-p">Classe grammaticale</label><span id="aw-ps">${posSelect('aw-p')}</span></div>
+      <div class="field"><label for="aw-m">Traduction</label>
+        <input id="aw-m" class="input" autocomplete="off" placeholder="ex. métro"></div>
+      <div class="field"><label for="aw-f">Autres formes à reconnaître <span class="muted" style="font-weight:400">(facultatif, séparées par des virgules)</span></label>
+        <input id="aw-f" class="input" lang="ko" autocomplete="off" placeholder="ex. 지하철을, 지하철로"></div>
+      <div class="sheet-actions">
+        <button type="button" class="btn" data-sheet-close>Annuler</button>
+        <button type="submit" class="btn primary">${icon('plus', 18)} Ajouter</button>
+      </div>
+    </form>`, { label: 'Ajouter un mot', onClose: after });
+  const $k = $('#aw-k', sheet), $m = $('#aw-m', sheet), $f = $('#aw-f', sheet), hint = $('#aw-hint', sheet);
+  let found = null;
+  $k.focus(); // here the keyboard is wanted: the user asked to type a word
+
+  const check = () => {
+    const k = wordKey($k.value);
+    found = null;
+    if (k && state.words[k]) {
+      hint.innerHTML = `<div class="ctx small row" style="margin:0">« ${esc(k)} » est déjà dans ta banque.<span class="spacer"></span><button type="button" class="btn" data-open>Ouvrir</button></div>`;
+      return;
+    }
+    found = k ? lookup(k) : null;
+    hint.innerHTML = found ? `<div class="ctx small row" style="margin:0"><span>Dans les textes : <b>${esc(found.meaning)}</b>${found.pos ? ` · ${esc(posFr(found.pos))}` : ''}</span>
+      <span class="spacer"></span><button type="button" class="btn" data-use>Utiliser</button></div>` : '';
+  };
+  $k.addEventListener('input', debounce(check, 150));
+  hint.addEventListener('click', (e) => {
+    if (e.target.closest('[data-open]')) { const k = wordKey($k.value); closeSheet(); wordDetail(k, after); return; }
+    if (e.target.closest('[data-use]') && found) {
+      $m.value = found.meaning || '';
+      $('#aw-ps', sheet).innerHTML = posSelect('aw-p', found.pos);
+      $f.value = (found.forms || []).filter((x) => x !== found.word).join(', ');
+      hint.innerHTML = '';
+    }
+  });
+
+  $('#aw', sheet).addEventListener('submit', (e) => {
+    e.preventDefault();
+    const word = wordKey($k.value), meaning = $m.value.trim();
+    if (!word) { $k.focus(); toast('Écris d’abord le mot coréen'); return; }
+    if (state.words[word]) { check(); toast('Ce mot est déjà dans ta banque'); return; }
+    if (!meaning) { $m.focus(); toast('Ajoute une traduction'); return; }
+    const forms = $f.value.split(/[,，]/).map((x) => x.trim()).filter(Boolean);
+    addWord({ word, meaning, pos: $('#aw-p', sheet).value, forms, custom: true });
+    closeSheet();
+    toast(`« ${word} » ajouté`, { action: 'Annuler', onAction: () => { removeWord(word); after(); } });
   });
 }
